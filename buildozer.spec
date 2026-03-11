@@ -6,7 +6,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,json,html,css,js
 source.include_patterns = static/*,static/**/*
 version = 1.0
-requirements = python3,kivy==2.1.0,requests,pyjnius
+requirements = python3,kivy==2.1.0,requests,pyjnius,urllib3,certifi,charset-normalizer,idna
 orientation = portrait
 fullscreen = 1
 android.permissions = INTERNET,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE
