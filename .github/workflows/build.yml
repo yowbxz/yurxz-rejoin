@@ -1,36 +1,46 @@
 name: Build APK YURXZ REJOIN
+
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-22.04
+
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
       - name: Install dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq openjdk-17-jdk python3-pip git zip unzip wget libffi-dev libssl-dev build-essential ccache
+          sudo apt-get install -y -qq \
+            openjdk-17-jdk python3-pip git zip unzip wget \
+            libffi-dev libssl-dev build-essential ccache
+
       - name: Install Python packages
         run: |
           pip install Cython==0.29.33
           pip install buildozer==1.5.0
           pip install colorama appdirs sh
+
       - name: Build APK
         env:
           BUILDOZER_WARN_ON_ROOT: "0"
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         run: |
           echo y | buildozer -v android debug 2>&1 | tee build_log.txt
+
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: YURXZ-REJOIN-APK
           path: bin/*.apk
+
       - name: Upload log jika gagal
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-log
           path: build_log.txt
