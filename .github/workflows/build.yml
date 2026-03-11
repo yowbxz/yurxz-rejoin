@@ -41,12 +41,17 @@ jobs:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         run: |
           echo y | buildozer -v android debug 2>&1 | tee build_log.txt
+          echo "=== Cari APK ==="
+          find . -name "*.apk" 2>/dev/null
+          ls -la bin/ 2>/dev/null || echo "bin/ tidak ada"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: YURXZ-REJOIN-APK
-          path: bin/*.apk
+          path: |
+            bin/*.apk
+            **/*.apk
           if-no-files-found: warn
 
       - name: Upload log jika gagal
