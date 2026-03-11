@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>YURXZ REJOIN</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --bg:      #080810;
+    --surface: #0f0f1a;
+    --card:    #151525;
+    --border:  #1e1e35;
+    --accent:  #7c3aed;
+    --accent2: #a855f7;
+    --green:   #22c55e;
+    --red:     #ef4444;
+    --yellow:  #eab308;
+    --text:    #e8e6ff;
+    --sub:     #5a5878;
+    --mono:    'JetBrains Mono', monospace;
+    --sans:    'Space Grotesk', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-logo {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .logo-text { font-size: 17px; font-weight: 700; letter-spacing: 0.5px; }
+  .logo-sub  { font-size: 10px; color: var(--sub); letter-spacing: 2px; text-transform: uppercase; }
+
+  .header-status {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; font-family: var(--mono);
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--sub);
+  }
+  .dot.on  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .dot.err { background: var(--red);   box-shadow: 0 0 6px var(--red); }
+
+  /* ─── NAV TABS ─── */
+  .nav {
+    display: flex;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav-tab {
+    flex: 1; min-width: 70px;
+    padding: 10px 4px;
+    font-size: 11px; font-weight: 600; text-align: center;
+    color: var(--sub);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+  .nav-tab.active { color: var(--accent2); border-bottom-color: var(--accent); }
+  .nav-tab-icon { font-size: 16px; display: block; margin-bottom: 2px; }
+
+  /* ─── PAGES ─── */
+  .page { display: none; padding: 14px; }
+  .page.active { display: block; }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-size: 11px; font-weight: 600; color: var(--sub);
+    text-transform: uppercase; letter-spacing: 1.5px;
+    margin-bottom: 12px;
+  }
+
+  /* ─── BUTTONS ─── */
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 12px 20px; border-radius: 10px; border: none;
+    font-family: var(--sans); font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all .15s; width: 100%;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:active { transform: scale(.97); background: #6d28d9; }
+  .btn-danger  { background: var(--red); color: #fff; }
+  .btn-danger:active  { transform: scale(.97); }
+  .btn-ghost   { background: var(--border); color: var(--text); }
+  .btn-ghost:active   { transform: scale(.97); }
+  .btn-sm { padding: 7px 12px; font-size: 12px; border-radius: 8px; width: auto; }
+
+  /* ─── START/STOP BIG ─── */
+  .start-btn {
+    height: 56px; border-radius: 14px; font-size: 16px; letter-spacing: 1px;
+    margin-bottom: 14px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    box-shadow: 0 4px 20px rgba(124,58,237,.35);
+  }
+  .start-btn.running {
+    background: linear-gradient(135deg, #991b1b, var(--red));
+    box-shadow: 0 4px 20px rgba(239,68,68,.35);
+  }
+
+  /* ─── STATUS BAR ─── */
+  .status-row {
+    display: flex; gap: 8px; margin-bottom: 12px;
+  }
+  .status-pill {
+    flex: 1; background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px;
+    text-align: center;
+  }
+  .status-pill .val {
+    font-size: 16px; font-weight: 700; font-family: var(--mono);
+  }
+  .status-pill .lbl { font-size: 10px; color: var(--sub); margin-top: 2px; }
+
+  /* ─── ACCOUNT CARDS ─── */
+  .acc-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .acc-avatar {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .acc-info { flex: 1; min-width: 0; }
+  .acc-name { font-size: 14px; font-weight: 600; }
+  .acc-link { font-size: 11px; color: var(--sub); font-family: var(--mono);
+               white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .acc-status {
+    font-size: 11px; font-weight: 600; font-family: var(--mono);
+    white-space: nowrap;
+  }
+  .acc-del { background: none; border: none; color: var(--sub);
+              font-size: 16px; cursor: pointer; padding: 4px; flex-shrink: 0; }
+
+  /* ─── FORM ─── */
+  .form-group { margin-bottom: 12px; }
+  .form-label { font-size: 11px; color: var(--sub); font-weight: 600;
+                letter-spacing: 0.5px; margin-bottom: 6px; display: block; }
+  .form-input {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 11px 13px;
+    color: var(--text); font-family: var(--sans); font-size: 13px;
+    outline: none; transition: border .15s;
+  }
+  .form-input:focus { border-color: var(--accent); }
+  .form-input::placeholder { color: var(--sub); }
+
+  /* ─── TOGGLE ─── */
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+  }
+  .toggle-row:last-child { border-bottom: none; }
+  .toggle-label { font-size: 13px; }
+  .toggle-sub   { font-size: 11px; color: var(--sub); margin-top: 1px; }
+
+  .switch { position: relative; width: 46px; height: 26px; flex-shrink: 0; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; inset: 0; border-radius: 13px;
+    background: var(--border); cursor: pointer; transition: .2s;
+  }
+  .slider:before {
+    content: ''; position: absolute;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--sub); left: 3px; top: 3px; transition: .2s;
+  }
+  input:checked + .slider { background: var(--accent); }
+  input:checked + .slider:before { transform: translateX(20px); background: #fff; }
+
+  /* ─── LOG ─── */
+  .log-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px;
+    height: 220px; overflow-y: auto;
+    font-family: var(--mono); font-size: 11px; line-height: 1.7;
+  }
+  .log-box::-webkit-scrollbar { width: 3px; }
+  .log-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .log-line { padding: 1px 0; }
+  .log-line.ok     { color: var(--green); }
+  .log-line.err    { color: var(--red); }
+  .log-line.warn   { color: var(--yellow); }
+  .log-line.normal { color: var(--sub); }
+
+  /* ─── ADD FORM OVERLAY ─── */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.8);
+    z-index: 200; display: none; align-items: flex-end;
+  }
+  .overlay.show { display: flex; }
+  .overlay-sheet {
+    background: var(--surface); border-radius: 20px 20px 0 0;
+    padding: 20px 16px 30px; width: 100%;
+    max-height: 85vh; overflow-y: auto;
+    border-top: 1px solid var(--border);
+  }
+  .overlay-handle {
+    width: 36px; height: 4px; background: var(--border);
+    border-radius: 2px; margin: 0 auto 16px;
+  }
+  .overlay-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+
+  /* ─── EMPTY STATE ─── */
+  .empty {
+    text-align: center; padding: 30px 20px;
+    color: var(--sub); font-size: 13px;
+  }
+  .empty-icon { font-size: 36px; margin-bottom: 8px; }
+
+  /* ─── ADB BADGE ─── */
+  .adb-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 5px 10px;
+    font-size: 11px; font-family: var(--mono);
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-logo">
+    <div class="logo-icon">🎮</div>
+    <div>
+      <div class="logo-text">YURXZ</div>
+      <div class="logo-sub">REJOIN</div>
+    </div>
+  </div>
+  <div class="header-status">
+    <div class="dot" id="adb-dot"></div>
+    <span id="adb-label" style="color:var(--sub)">ADB</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="nav-tab active" onclick="showPage('home')" id="tab-home">
+    <span class="nav-tab-icon">🏠</span>Home
+  </div>
+  <div class="nav-tab" onclick="showPage('accounts')" id="tab-accounts">
+    <span class="nav-tab-icon">👤</span>Akun
+  </div>
+  <div class="nav-tab" onclick="showPage('logs')" id="tab-logs">
+    <span class="nav-tab-icon">📋</span>Log
+  </div>
+  <div class="nav-tab" onclick="showPage('settings')" id="tab-settings">
+    <span class="nav-tab-icon">⚙️</span>Setting
+  </div>
+</div>
+
+<!-- ─── HOME PAGE ─── -->
+<div class="page active" id="page-home">
+
+  <!-- Start/Stop -->
+  <button class="btn start-btn" id="start-btn" onclick="toggleStart()">
+    ▶ &nbsp;START
+  </button>
+
+  <!-- Status pills -->
+  <div class="status-row">
+    <div class="status-pill">
+      <div class="val" id="pill-accounts">0</div>
+      <div class="lbl">Akun</div>
+    </div>
+    <div class="status-pill">
+      <div class="val" id="pill-running" style="color:var(--sub)">—</div>
+      <div class="lbl">Status</div>
+    </div>
+    <div class="status-pill">
+      <div class="val" id="pill-time" style="font-size:13px">—</div>
+      <div class="lbl">Uptime</div>
+    </div>
+  </div>
+
+  <!-- Account status cards -->
+  <div class="card">
+    <div class="card-title">Status Akun</div>
+    <div id="status-cards"></div>
+  </div>
+
+  <!-- ADB connect -->
+  <button class="btn btn-ghost" onclick="connectAdb()" style="margin-bottom:10px">
+    🔗 &nbsp;Connect ADB
+  </button>
+
+</div>
+
+<!-- ─── ACCOUNTS PAGE ─── -->
+<div class="page" id="page-accounts">
+  <button class="btn btn-primary" onclick="showAddOverlay()" style="margin-bottom:14px">
+    + &nbsp;Tambah Akun
+  </button>
+  <div id="accounts-list"></div>
+</div>
+
+<!-- ─── LOGS PAGE ─── -->
+<div class="page" id="page-logs">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <span style="font-size:13px;font-weight:600">Live Log</span>
+    <button class="btn btn-ghost btn-sm" onclick="clearLogs()">Hapus</button>
+  </div>
+  <div class="log-box" id="log-box"></div>
+</div>
+
+<!-- ─── SETTINGS PAGE ─── -->
+<div class="page" id="page-settings">
+  <div class="card">
+    <div class="card-title">Webhook & Interval</div>
+
+    <div class="form-group">
+      <label class="form-label">Discord Webhook URL</label>
+      <input class="form-input" id="cfg-webhook" type="url"
+             placeholder="https://discord.com/api/webhooks/...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Check Interval (detik)</label>
+      <input class="form-input" id="cfg-interval" type="number" value="30">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Fitur</div>
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">🔇 Auto Mute</div>
+        <div class="toggle-sub">Matikan audio Roblox via appops</div>
+      </div>
+      <label class="switch"><input type="checkbox" id="cfg-mute" checked><span class="slider"></span></label>
+    </div>
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">📉 Auto Low Resolusi</div>
+        <div class="toggle-sub">Turun ke 540x960 density 120</div>
+      </div>
+      <label class="switch"><input type="checkbox" id="cfg-res" checked><span class="slider"></span></label>
+    </div>
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">🪟 Floating Window</div>
+        <div class="toggle-sub">windowingMode 5 (experimental)</div>
+      </div>
+      <label class="switch"><input type="checkbox" id="cfg-float"><span class="slider"></span></label>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="saveSettings()">💾 &nbsp;Simpan</button>
+</div>
+
+<!-- ─── ADD ACCOUNT OVERLAY ─── -->
+<div class="overlay" id="add-overlay" onclick="hideAddOverlay(event)">
+  <div class="overlay-sheet">
+    <div class="overlay-handle"></div>
+    <div class="overlay-title">Tambah Akun</div>
+
+    <div class="form-group">
+      <label class="form-label">Nama Akun</label>
+      <input class="form-input" id="add-name" placeholder="contoh: MainAcc">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Private Server Link</label>
+      <input class="form-input" id="add-link" placeholder="https://www.roblox.com/share?code=...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Package (opsional)</label>
+      <input class="form-input" id="add-pkg" value="com.roblox.client" placeholder="com.roblox.client">
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-ghost" onclick="hideAddOverlay()">Batal</button>
+      <button class="btn btn-primary" onclick="addAccount()">Tambah</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '';
+let isRunning = false;
+let logCount  = 0;
+let startTime = null;
+let uptimeInterval = null;
+
+// ─── PAGE NAV ────────────────────────────────────────────────────────────────
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ─── POLLING ─────────────────────────────────────────────────────────────────
+async function poll() {
+  try {
+    const r = await fetch(API + '/api/status');
+    const d = await r.json();
+
+    // ADB dot
+    const dot = document.getElementById('adb-dot');
+    const lbl = document.getElementById('adb-label');
+    if (d.adb) {
+      dot.className = 'dot on';
+      lbl.style.color = 'var(--green)';
+      lbl.textContent = 'ADB ✓';
+    } else {
+      dot.className = 'dot err';
+      lbl.style.color = 'var(--red)';
+      lbl.textContent = 'ADB ✗';
+    }
+
+    // Start/stop button
+    const btn = document.getElementById('start-btn');
+    if (d.running !== isRunning) {
+      isRunning = d.running;
+      if (isRunning) {
+        btn.textContent = '■  STOP';
+        btn.classList.add('running');
+        if (!startTime) { startTime = Date.now(); startUptime(); }
+        document.getElementById('pill-running').textContent = 'ON';
+        document.getElementById('pill-running').style.color = 'var(--green)';
+      } else {
+        btn.textContent = '▶  START';
+        btn.classList.remove('running');
+        clearInterval(uptimeInterval);
+        startTime = null;
+        document.getElementById('pill-time').textContent = '—';
+        document.getElementById('pill-running').textContent = 'OFF';
+        document.getElementById('pill-running').style.color = 'var(--sub)';
+      }
+    }
+
+    // Account status cards on home
+    const states  = d.states || {};
+    const numAccs = Object.keys(states).length;
+    document.getElementById('pill-accounts').textContent = numAccs;
+    renderStatusCards(states);
+
+  } catch(e) {}
+}
+
+function renderStatusCards(states) {
+  const el = document.getElementById('status-cards');
+  const keys = Object.keys(states);
+  if (keys.length === 0) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">😴</div>Belum ada akun ditambahkan</div>';
+    return;
+  }
+  el.innerHTML = keys.map(i => {
+    const s = states[i];
+    const statusColor =
+      s.status?.includes('✅') ? 'var(--green)' :
+      s.status?.includes('❌') ? 'var(--red)'   :
+      s.status?.includes('❄') ? '#60a5fa'       : 'var(--yellow)';
+    return `
+    <div class="acc-card">
+      <div class="acc-avatar">🎮</div>
+      <div class="acc-info">
+        <div class="acc-name">${s.name || 'Akun'}</div>
+        <div class="acc-link">${s.pkg || 'com.roblox.client'}</div>
+      </div>
+      <div class="acc-status" style="color:${statusColor}">${s.status || 'Idle'}</div>
+    </div>`;
+  }).join('');
+}
+
+function startUptime() {
+  uptimeInterval = setInterval(() => {
+    if (!startTime) return;
+    const sec = Math.floor((Date.now() - startTime) / 1000);
+    const h   = String(Math.floor(sec / 3600)).padStart(2,'0');
+    const m   = String(Math.floor((sec % 3600) / 60)).padStart(2,'0');
+    const s   = String(sec % 60).padStart(2,'0');
+    document.getElementById('pill-time').textContent = `${h}:${m}:${s}`;
+  }, 1000);
+}
+
+// ─── LOGS ─────────────────────────────────────────────────────────────────────
+async function fetchLogs() {
+  try {
+    const r = await fetch(API + '/api/logs?since=' + logCount);
+    const d = await r.json();
+    if (d.logs && d.logs.length) {
+      const box = document.getElementById('log-box');
+      d.logs.forEach(line => {
+        logCount++;
+        const div = document.createElement('div');
+        div.className = 'log-line ' + classifyLog(line);
+        div.textContent = line;
+        box.appendChild(div);
+      });
+      box.scrollTop = box.scrollHeight;
+    }
+  } catch(e) {}
+}
+
+function classifyLog(line) {
+  if (line.includes('✓') || line.includes('OK') || line.includes('connected')) return 'ok';
+  if (line.includes('✗') || line.includes('failed') || line.includes('Failed')) return 'err';
+  if (line.includes('FROZEN') || line.includes('Rejoining')) return 'warn';
+  return 'normal';
+}
+
+function clearLogs() {
+  document.getElementById('log-box').innerHTML = '';
+  logCount = 0;
+}
+
+// ─── START / STOP ─────────────────────────────────────────────────────────────
+async function toggleStart() {
+  if (isRunning) {
+    await fetch(API + '/api/stop');
+  } else {
+    await fetch(API + '/api/start');
+  }
+  poll();
+}
+
+// ─── ADB CONNECT ──────────────────────────────────────────────────────────────
+async function connectAdb() {
+  const btn = event.target;
+  btn.textContent = '⏳ Connecting...';
+  btn.disabled = true;
+  try {
+    const r = await fetch(API + '/api/connect_adb');
+    const d = await r.json();
+    btn.textContent = d.ok ? '✓ ADB Connected!' : '✗ ADB Failed';
+    setTimeout(() => {
+      btn.textContent = '🔗 Connect ADB';
+      btn.disabled = false;
+    }, 2000);
+  } catch(e) {
+    btn.textContent = '✗ Error';
+    btn.disabled = false;
+  }
+  poll();
+}
+
+// ─── ACCOUNTS ─────────────────────────────────────────────────────────────────
+async function loadAccounts() {
+  const r = await fetch(API + '/api/config');
+  const cfg = await r.json();
+  const list = document.getElementById('accounts-list');
+  const accs = cfg.accounts || [];
+  if (accs.length === 0) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">👤</div>Belum ada akun.<br>Tap tombol di atas untuk tambah.</div>';
+    return;
+  }
+  list.innerHTML = accs.map((a, i) => `
+    <div class="acc-card">
+      <div class="acc-avatar">🎮</div>
+      <div class="acc-info">
+        <div class="acc-name">${a.name}</div>
+        <div class="acc-link">${a.ps_link || '-'}</div>
+      </div>
+      <button class="acc-del" onclick="deleteAccount(${i})">🗑</button>
+    </div>`).join('');
+}
+
+async function deleteAccount(idx) {
+  await fetch(API + '/api/accounts/delete', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({index: idx})
+  });
+  loadAccounts();
+}
+
+function showAddOverlay() {
+  document.getElementById('add-overlay').classList.add('show');
+}
+
+function hideAddOverlay(e) {
+  if (!e || e.target === document.getElementById('add-overlay'))
+    document.getElementById('add-overlay').classList.remove('show');
+}
+
+async function addAccount() {
+  const name = document.getElementById('add-name').value.trim();
+  const link = document.getElementById('add-link').value.trim();
+  const pkg  = document.getElementById('add-pkg').value.trim() || 'com.roblox.client';
+  if (!name || !link) return;
+
+  await fetch(API + '/api/accounts/add', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({name, ps_link: link, package: pkg})
+  });
+
+  document.getElementById('add-name').value = '';
+  document.getElementById('add-link').value = '';
+  document.getElementById('add-pkg').value  = 'com.roblox.client';
+  hideAddOverlay();
+  loadAccounts();
+}
+
+// ─── SETTINGS ─────────────────────────────────────────────────────────────────
+async function loadSettings() {
+  const r = await fetch(API + '/api/config');
+  const cfg = await r.json();
+  document.getElementById('cfg-webhook').value  = cfg.webhook_url || '';
+  document.getElementById('cfg-interval').value = cfg.check_interval || 30;
+  document.getElementById('cfg-mute').checked   = cfg.auto_mute !== false;
+  document.getElementById('cfg-res').checked    = cfg.auto_low_res !== false;
+  document.getElementById('cfg-float').checked  = !!cfg.floating_window;
+}
+
+async function saveSettings() {
+  const cfg = {
+    webhook_url:     document.getElementById('cfg-webhook').value.trim(),
+    check_interval:  parseInt(document.getElementById('cfg-interval').value) || 30,
+    auto_mute:       document.getElementById('cfg-mute').checked,
+    auto_low_res:    document.getElementById('cfg-res').checked,
+    floating_window: document.getElementById('cfg-float').checked,
+  };
+  await fetch(API + '/api/config', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(cfg)
+  });
+  const btn = event.target;
+  btn.textContent = '✓ Tersimpan!';
+  setTimeout(() => btn.textContent = '💾 Simpan', 1500);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+loadSettings();
+loadAccounts();
+poll();
+setInterval(poll, 3000);
+setInterval(fetchLogs, 2000);
+</script>
+</body>
+</html>
