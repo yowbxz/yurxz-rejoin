@@ -34,12 +34,6 @@ jobs:
           pip install buildozer==1.5.0
           pip install colorama appdirs sh
 
-      - name: Cache buildozer
-        uses: actions/cache@v4
-        with:
-          path: ~/.buildozer
-          key: buildozer-${{ hashFiles('buildozer.spec') }}
-
       - name: Build APK
         env:
           BUILDOZER_WARN_ON_ROOT: "0"
