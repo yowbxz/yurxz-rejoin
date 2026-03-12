@@ -8,39 +8,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
+    container:
+      image: kivy/buildozer:latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq \
-            openjdk-17-jdk git zip unzip wget \
-            libffi-dev libssl-dev build-essential ccache \
-            autoconf automake libtool pkg-config \
-            zlib1g-dev libncurses5-dev libncursesw5-dev \
-            cmake ninja-build
-
-      - name: Install Python packages
-        run: |
-          pip install --upgrade pip
-          pip install Cython==0.29.33
-          pip install buildozer==1.5.0
-          pip install colorama appdirs sh
-
       - name: Build APK
-        env:
-          BUILDOZER_WARN_ON_ROOT: "0"
-          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         run: |
-          echo y | buildozer -v android debug 2>&1 | tee build_log.txt
-          find . -name "*.apk" 2>/dev/null || echo "APK tidak ditemukan"
+          yes | buildozer android debug 2>&1 | tee build_log.txt
+          find . -name "*.apk" 2>/dev/null
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
